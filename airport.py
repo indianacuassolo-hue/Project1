@@ -1,119 +1,191 @@
 class Airport:
-    def __init__(self, ICAO, lat, lng):
-        self.ICAO = ICAO
-        self.coordinates = (lat, lng)
-        self.sch = False
+    def __init__(self, ICAO, latitude, longitude):
+        self.ICAO =ICAO
+        self.latitude = latitude
+        self.longitude = longitude
+        self.schengen = False
+
 def IsSchengenAirport(code):
-    schengen_countries = ['LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'LG', 'EH', 'LH','BI','LI', 'EV', 'EY', 'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES','LS']
 
-    if code == "":
-        return None
-    if code[:2] in schengen_countries:
-        return True
-    else:
-        return False
+    schengen_prefixes = [   'LO', 'EB', 'LK', 'LC', 'EK', 'EE', 'EF', 'LF', 'ED', 'ET','LG', 'EH', 'LH','BI', 'LI', 'EV', 'EY', 'EL', 'LM', 'EN', 'EP', 'LP', 'LZ', 'LJ', 'LE', 'ES', 'LS' ]
+    encontrado=False
+    prefix=str(code[0:2])
 
+    for i in  schengen_prefixes:
+        if prefix==i:
+            encontrado = True
+        if prefix=="":
+            encontrado = False
+
+    return encontrado
 
 def SetSchengen(airport):
     airport.schengen = IsSchengenAirport(airport.ICAO)
 
-def PrintAirport(airport):
-    print("ICAO: ", airport.ICAO)
-    print("Coordinates: ", airport.coordinates)
-    print("Schengen: ", airport.schengen)
-#Step 3
+def PrintAirport (airport):
+    print(f"ICAO: {airport.ICAO}")
+    print(f"Coordinates: {airport.latitude}, {airport.longitude}")
+    print(f"Schengen: {airport.schengen}")
+
+
 def LoadAirports(filename):
     airports = []
-
     try:
-        with open(filename, 'r') as file:
-            lines = file.readlines()
+        f=open(filename, 'r')
 
-            for line in lines[1:]:
-                parts = line.strip().split()
+        lines = f.readlines()
 
-                if len(parts) != 3:
-                    continue
+        for line in lines[1:]:
+             parts = line.strip().split()
+             if len(parts) == 3:
 
                 code = parts[0]
+                # Convert DMS string (e.g., N635906) to decimal
                 lat_str = parts[1]
-                lon_str = parts[2]
-
-                # LATITUD
-                lat_deg = int(lat_str[1:3])
-                lat_min = int(lat_str[3:5])
-                lat_sec = int(lat_str[5:7])
-                lat = lat_deg + lat_min/60 + lat_sec/3600
-
+                lat = int(lat_str[1:3]) + int(lat_str[3:5]) / 60 + int(lat_str[5:7]) / 3600
                 if lat_str[0] == 'S':
                     lat = -lat
 
-                # LONGITUD
-                lon_deg = int(lon_str[1:4])
-                lon_min = int(lon_str[4:6])
-                lon_sec = int(lon_str[6:8])
-                lon = lon_deg + lon_min/60 + lon_sec/3600
-
+                lon_str = parts[2]
+                lon = int(lon_str[1:4]) + int(lon_str[4:6]) / 60 + int(lon_str[6:8]) / 3600
                 if lon_str[0] == 'W':
                     lon = -lon
 
-                airport = Airport(code, lat, lon)
-                airports.append(airport)
-
+                airports.append(Airport(code, lat, lon))
     except FileNotFoundError:
         return []
-
     return airports
 
 
 def SaveSchengenAirports(airports, filename):
-    if not airports:
-        return -1
 
-    schengen_airports = [a for a in airports if a.schengen]
+    if len(airports) == 0:
+        return " Error, no hay nafda"
 
-    if not schengen_airports:
-        return -1
+    f = open(filename, 'w')
+    f.write("CODE LAT LON")
 
-    with open(filename, 'w') as file:
-        file.write("CODE LAT LON\n")
-
-        for a in schengen_airports:
-            lat_dir = 'N' if a.lat >= 0 else 'S'
-            lon_dir = 'E' if a.lon >= 0 else 'W'
-
-            lat = abs(a.lat)
-            lon = abs(a.lon)
-
-            lat_deg = int(lat)
-            lat_min = int((lat - lat_deg) * 60)
-            lat_sec = int((((lat - lat_deg) * 60) - lat_min) * 60)
-
-            lon_deg = int(lon)
-            lon_min = int((lon - lon_deg) * 60)
-            lon_sec = int((((lon - lon_deg) * 60) - lon_min) * 60)
-
-            lat_str = f"{lat_dir}{lat_deg:02d}{lat_min:02d}{lat_sec:02d}"
-            lon_str = f"{lon_dir}{lon_deg:03d}{lon_min:02d}{lon_sec:02d}"
-
-            file.write(f"{a.code} {lat_str} {lon_str}\n")
-
+    for a in airports:
+        if a.schengen == True:
+            linea = a.ICAO + " " + str(a.latitude) + " " + str(a.longitude) + "\n"
+            f.write(linea)
     return 0
 
 
 def AddAirport(airports, airport):
-    for a in airports:
-        if a.code == airport.code:
-            return -1
 
-    airports.append(airport)
-    return 0
+
+    encontrado = False
+    i = 0
+    num_airports = len(airports)
+
+
+    while i < num_airports and not encontrado:
+        if airports[i].ICAO == airport.ICAO:
+            encontrado = True
+        i = i + 1
+
+    # 3. Conditional Statement: Solo añadimos si NO se encontró
+    if encontrado == False:
+        airports.append(airport)
 
 
 def RemoveAirport(airports, code):
-    for i, a in enumerate(airports):
-        if a.code == code:
-            airports.pop(i)
-            return 0
+    encontrado = False
+    i = 0
+    n = len(airports)
 
-    return -1
+
+    while i < n and not encontrado:
+        if airports[i].ICAO == code:
+            encontrado = True
+        else:
+            i = i + 1
+
+
+    if encontrado:
+
+        while i < n-1:
+            airports[i]=airports[i+1]
+            i=i+1
+    aeros=[]
+    for j in range(n-1):
+        aeros.append(airports[j])
+    airports=aeros
+    return 0
+
+
+import matplotlib.pyplot as plt
+
+
+def PlotAirports(airports):
+
+    n_schengen = 0
+    n_no_schengen = 0
+
+    for a in airports:
+        if a.schengen == True:
+            n_schengen = n_schengen + 1
+        else:
+            n_no_schengen = n_no_schengen + 1
+
+
+
+    labels = ['Airports']
+
+
+    plt.figure()
+
+
+    plt.bar(labels, [n_schengen], label='Schengen', color='steelblue')
+
+
+    plt.bar(labels, [n_no_schengen], bottom=[n_schengen], label='No Schengen', color='lightcoral')
+
+
+    plt.ylabel('Count')
+    plt.title('Schengen airports')
+    plt.legend()
+
+
+    plt.show()
+
+
+def MapAirports(airports, filename="airports.kml"):
+
+    f = open(filename, 'w')
+
+
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    f.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
+    f.write('<Document>\n')
+    f.write('  <name>Airports Map</name>\n')
+
+
+    for a in airports:
+
+
+        if a.schengen == True:
+            color = "ff0000ff"
+        else:
+            color = "ffff0000"
+
+      
+        f.write('  <Placemark>\n')
+        f.write('    <name>' + a.ICAO + '</name>\n')
+        f.write('    <Style>\n')
+        f.write('      <IconStyle>\n')
+        f.write('        <color>' + color + '</color>\n')
+        f.write('      </IconStyle>\n')
+        f.write('    </Style>\n')
+        f.write('    <Point>\n')
+
+        f.write('      <coordinates>' + str(a.longitude) + ',' + str(a.latitude) + ',0</coordinates>\n')
+        f.write('    </Point>\n')
+        f.write('  </Placemark>\n')
+
+
+    f.write('</Document>\n')
+    f.write('</kml>\n')
+    f.close()
+    print(f"Archivo {filename} generado. Ábrelo con Google Earth.")
