@@ -72,7 +72,7 @@ def SaveSchengenAirports(airports, filename):
     return 0
 
 
-def AddAirport(airports, airport):
+def AddAirport(airports, new_airport):
 
 
     encontrado = False
@@ -81,38 +81,51 @@ def AddAirport(airports, airport):
 
 
     while i < num_airports and not encontrado:
-        if airports[i].ICAO == airport.ICAO:
+        if airports[i].ICAO == new_airport.ICAO:
             encontrado = True
-        i = i + 1
+        else:
+            i=i+1
+
 
     # 3. Conditional Statement: Solo añadimos si NO se encontró
     if encontrado == False:
-        airports.append(airport)
+        airports.append(new_airport)
+        return 0
 
 
-def RemoveAirport(airports, code):
+def RemoveAirport(airport_list, code):
+   
     encontrado = False
     i = 0
-    n = len(airports)
+    n = len(airport_list)
 
-
+    
     while i < n and not encontrado:
-        if airports[i].ICAO == code:
+        if airport_list[i].ICAO == code:
             encontrado = True
         else:
             i = i + 1
 
-
+  
     if encontrado:
+       
+        while i < n - 1:
+            airport_list[i] = airport_list[i + 1]
+            i = i + 1
 
-        while i < n-1:
-            airports[i]=airports[i+1]
-            i=i+1
-    aeros=[]
-    for j in range(n-1):
-        aeros.append(airports[j])
-    airports=aeros
-    return 0
+        
+        aeros = []
+        for j in range(n - 1):
+            aeros.append(airport_list[j])
+
+      
+        airport_list.clear()
+        for item in aeros:
+            airport_list.append(item)
+
+        return 0
+    else:
+        return -1
 
 
 import matplotlib.pyplot as plt
@@ -170,7 +183,7 @@ def MapAirports(airports, filename="airports.kml"):
         else:
             color = "ffff0000"
 
-      
+        # 4. Escribimos la "chincheta" (Placemark) para cada aeropuerto
         f.write('  <Placemark>\n')
         f.write('    <name>' + a.ICAO + '</name>\n')
         f.write('    <Style>\n')
