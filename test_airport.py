@@ -8,12 +8,15 @@ print(f"Loaded {len(airport_list)} airports.")
 
 for a in airport_list:
     SetSchengen(a)
-new_ap = Airport("PRUEBA", 0.0, 0.0)
-AddAirport(airport_list, new_ap)
+nuevo = Airport("nasa", 41.90, 2.76) # Gerona
+nuevo.schengen=True
+res1 = AddAirport(airport_list, nuevo)
+
+
 print(f"List size after adding PRUEBA: {len(airport_list)}")
 
-RemoveAirport(airport_list, "PRUEBA")
-print(f"List size after removing PRUEBA: {len(airport_list)}")
+codigo_a_borrar = "EBAW"
+resultado = RemoveAirport(airport_list, codigo_a_borrar)
 
 
 result = SaveSchengenAirports(airport_list, "Schengen_Airports.txt")
