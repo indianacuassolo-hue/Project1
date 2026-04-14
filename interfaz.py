@@ -42,7 +42,7 @@ window.rowconfigure(5, weight=1)
 window.rowconfigure(6, weight=1)
 
 #Títols
-tituloLabel = Label(window, text="Airport Manager", font=("Courier", 18, "bold"))
+tituloLabel = Label(window, text="AIRPORT", font=("Times New Roman", 18, "bold"))
 tituloLabel.grid(row=0, column=0, columnspan=2, padx=5, pady=5, sticky=N+S+E+W)
 
 #Arxius
@@ -60,11 +60,13 @@ ICAOLabel.grid(row=2, column=0, padx=5, pady=5, sticky=N+S+E+W)
 ICAOEntry = Entry(window)
 ICAOEntry.grid(row=2, column=1, padx=5, pady=5, sticky=N+S+E+W)
 
-#Botons
-Button(window, text="Load Airports", bg="blue", fg="white", command=Load).grid(row=3, column=0, columnspan=2, padx=5, pady=3, sticky=N+S+E+W)
-Button(window, text="Add Airport",   bg="green", fg="white", command=Add).grid(row=4, column=0, columnspan=2, padx=5, pady=3, sticky=N+S+E+W)
-Button(window, text="Remove Airport",bg="red",   fg="white", command=Remove).grid(row=5, column=0, columnspan=2, padx=5, pady=3, sticky=N+S+E+W)
-Button(window, text="Ver Gráfico",   bg="orange",            command=plot).grid(row=6, column=0, padx=5, pady=3, sticky=N+S+E+W)
-Button(window, text="Google Earth",  bg="orange",            command=Map).grid(row=6, column=1, padx=5, pady=3, sticky=N+S+E+W)
+#Botons, per fer un botó:
+#bg(background), "color/#codi hexadecimal", fg(foreground, color lletra), "white", font(tipus lletra, mida, estil)
+#.grid() organitza els elements en files (row) i columnes (column), sticky serveix per estirar-se
+Button(window, text="Load Airports", bg="#F472B6", fg="white", command=Load).grid(row=3, column=0, columnspan=2, padx=5, pady=3, sticky=N+S+E+W)
+Button(window, text="Add Airport",   bg="#EC4899", fg="white", command=Add).grid(row=4, column=0, columnspan=2, padx=5, pady=3, sticky=N+S+E+W)
+Button(window, text="Remove Airport",bg="#DB2777",   fg="white", command=Remove).grid(row=5, column=0, columnspan=2, padx=5, pady=3, sticky=N+S+E+W)
+Button(window, text="Ver Gráfico",   bg="#F9A8D4",            command=plot).grid(row=6, column=0, padx=5, pady=3, sticky=N+S+E+W)
+Button(window, text="Google Earth",  bg="#831843",            command=Map).grid(row=6, column=1, padx=5, pady=3, sticky=N+S+E+W)
 
 window.mainloop()
