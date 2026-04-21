@@ -1,0 +1,20 @@
+def PlotAirports(airports, ax):
+
+    n_schengen = 0
+    n_no_schengen = 0
+
+    for a in airports:
+        if a.schengen == True:
+            n_schengen = n_schengen + 1
+        else:
+            n_no_schengen = n_no_schengen + 1
+
+
+    labels = ['Airports']
+    ax.bar(labels, [n_schengen], label='Schengen', color='steelblue')
+
+    ax.bar(labels, [n_no_schengen], bottom=[n_schengen], label='No Schengen', color='lightcoral')
+
+    ax.set_xlabel('Count')
+    ax.set_title('Schengen airports')
+    ax.legend()
